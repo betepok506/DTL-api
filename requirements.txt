@@ -1,0 +1,11 @@
+sqlalchemy>=2.0.22
+fastapi>=0.100.0
+uvicorn>=0.22.0
+fastapi_health>=0.4.0
+alembic>=1.11.1
+geoalchemy2>=0.14.0
+shapely>=2.0.1
+pillow
+pydantic-settings>=2.0.3
+httpx>=0.25.0
+psycopg2-binary
