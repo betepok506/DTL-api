@@ -5,6 +5,20 @@ from pydantic_settings import BaseSettings
 logging.basicConfig(level=logging.INFO)
 
 
+class FAISSConfig:
+    '''Данный класс содержит параметры конфигурации для работы с FAISS'''
+    path_to_index: str = '/faiss_index'  # Путь до папки, где хранятся индексы
+    path_to_block_index: str = f'{path_to_index}/block'  # Путь до папки, содержищей блоки индекса
+    name_index: str = 'faiss_index.index'  # Название файла, содержащего индекс
+    trained_index: str = 'trained_index.index'  # Название файла, содержащего индекс для тренировки
+
+    vector_dim: int = 128  # Размер вектора
+    num_clusters: int = 512  # Количество векторов
+    block_size: int = 1024  # Количество векторов в одном блоке
+
+    overwriting_indexes = False  # True если удалять ранее созданный индекс
+
+
 class Settings(BaseSettings):
     """App settings."""
 
@@ -28,5 +42,5 @@ class Settings(BaseSettings):
         env_file = ".env"
         case_sensitive = True
 
-
+faiss_config = FAISSConfig()
 settings = Settings()
