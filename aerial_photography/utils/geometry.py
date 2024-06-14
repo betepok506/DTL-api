@@ -46,9 +46,4 @@ def convert_wkb_to_coordinates(wkb: WKBElement):
     # Упрощение координат до углов (верхний левый, верхний правый, нижний правый, нижний левый)
     ul, ur, br, bl = coords[0], coords[1], coords[2], coords[3]
 
-    return {
-        "ul": ul,
-        "ur": ur,
-        "br": br,
-        "bl": bl
-    }
+    return ul, ur, br, bl
