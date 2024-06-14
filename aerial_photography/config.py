@@ -29,18 +29,20 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "local"
 
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", 'postgres')
-    DATABASE_PORT: str = os.getenv('DATABASE_PORT', '6503')
+    DATABASE_PORT: str = os.getenv('DATABASE_PORT', '5432')
     DATABASE_URI: str = os.getenv('DATABASE_URI', 'localhost') + ":" + DATABASE_PORT
     POSTGRES_USER: str = os.getenv('POSTGRES_USER', 'postgres')
     # SQLALCHEMY_DATABASE_URL: str = f"postgresql+asyncpg://postgres:postgres@{DATABASE_URI}/{POSTGRES_PASSWORD}"
     SQLALCHEMY_DATABASE_URL: str = f"postgresql://postgres:postgres@{DATABASE_URI}/{POSTGRES_PASSWORD}"
 
+    PATH_TO_WEIGHTS_VECTORIZER: str = './dependencies/weights/resnet50_3.pth'
     # Database
     DATABASE_URL: str = SQLALCHEMY_DATABASE_URL
 
-    class ConfigDict:
-        env_file = ".env"
-        case_sensitive = True
+    # class ConfigDict:
+    #     env_file = ".env"
+    #     case_sensitive = True
+
 
 faiss_config = FAISSConfig()
 settings = Settings()

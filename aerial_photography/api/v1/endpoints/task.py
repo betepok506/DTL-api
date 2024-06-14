@@ -3,34 +3,43 @@ import io
 from sqlalchemy.orm import Session
 import numpy as np
 from PIL import Image
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Form
+from fastapi import APIRouter, UploadFile, File,Query, Depends, HTTPException, Form
 from aerial_photography.api.deps import get_db_session
 from aerial_photography import schemas
 from aerial_photography import crud
 from datetime import datetime
 
 from aerial_photography.utils.geometry import convert_wkb_to_coordinates
-from aerial_photography.utils.vectorizer import ImageVectorizer
+from aerial_photography.vectorizer.vectorizer import image_vectorizer
+from aerial_photography.database.faiss_session import db_faiss
 from aerial_photography.utils.nms import apply_nms
-
+import imghdr
 router = APIRouter()
-
-# TODO прописать веса
-vectorizer = ImageVectorizer(path_to_weight=PATH_TO_WEIGHT)
 
 
 @router.post("/tasks/")
-async def process_image(layout_name: str = Form(...), file: UploadFile = File(...), db: Session = Depends(get_db_session)):
+async def process_image(layout_name: str = Query(...),
+                        file: UploadFile = File(...),
+                        db: Session = Depends(get_db_session)):
     # TODO отследить время
-
+    tt = file.filename
     image_data = await file.read()
-    image = Image.open(io.BytesIO(image_data))
-    image_vector = vectorizer.vectorize(image)
+    with open('ttt.tif', "wb") as f:
+        f.write(image_data)
+
+    # with open('ttt.tif', "rb") as f:
+    image = Image.open('ttt.tif')
+
+    # image_format = imghdr.what(None, h=image_data)
+    # image_stream = io.BytesIO(image_data)
+    # # image = Image.open(io.BytesIO(image_data))
+    # image = Image.open(image_stream)
+    image_vector = image_vectorizer.vectorize(image)
 
     # Поиск ближайших соседей в FAISS
     #TODO получение индексов из faiss
     # index =
-    distances, indices = index.search(np.array([image_vector]), k=5)
+    distances, indices = db_faiss.search(np.array([image_vector]), k=5)
 
     # Получение информации из базы данных
     results = []
@@ -43,7 +52,7 @@ async def process_image(layout_name: str = Form(...), file: UploadFile = File(..
 
     # TODO сохранить результат
 
-    return {"task_id": task.id}
+    # return {"task_id": task.id}
 
 
 @router.post("/tasks/result/")

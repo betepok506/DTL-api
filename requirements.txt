@@ -14,4 +14,6 @@ torch
 torchvision
 rasterio
 pyproj
-DTLSiameseNetwork
+DTLSiameseNetwork==0.0.6
+faiss-cpu
+python-multipart
