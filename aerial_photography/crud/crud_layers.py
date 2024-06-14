@@ -95,6 +95,20 @@ class CRUDLayers(
 
         return result[0]
 
+    def get_by_faiss_id_and_layout_name(self, db: Session, faiss_id: int, layout_name: str) -> Union[Layers, None]:
+        result = db.scalars(select(self.model).filter(
+            self.model.faiss_id == faiss_id,
+            self.model.layout_name == layout_name
+        ).limit(1))
+        result = [item for item in result]
+        if len(result) == 0:
+            return None
+
+        if isinstance(result[0].polygon_coordinates, WKBElement):
+            result[0].polygon_coordinates = convert_wkb_to_str(result[0].polygon_coordinates)
+
+        return result[0]
+
 
     def remove(self, db: Session, *, id: int) -> Union[Layers, None]:
         obj = self.get(db=db, id=id)
