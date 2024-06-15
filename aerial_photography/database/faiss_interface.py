@@ -11,7 +11,8 @@ from pathlib import Path
 class FAISS:
     def __init__(self, parameters: FAISSConfig):
         self.parameters: FAISSConfig = parameters
-        self.index = faiss.index_factory(self.parameters.vector_dim, f"IVF{int(self.parameters.num_clusters)},PQ64", faiss.METRIC_L2)
+        self.index = faiss.index_factory(self.parameters.vector_dim, f"IVF{int(self.parameters.num_clusters)},PQ64",
+                                         faiss.METRIC_L2)
 
         self._cur_vectors = np.empty((0, self.parameters.vector_dim))
         self._cur_vectors_ind = np.array([], dtype=np.int8)
@@ -69,6 +70,11 @@ class FAISS:
             self._cur_ind += 1
         return indexes
 
+    def normalize(self, vectors):
+        # Нормализация векторов для косинусного расстояния
+        faiss.normalize_L2(vectors)
+        return vectors
+
     def _merge_block(self):
         final_index = faiss.read_index(os.path.join(self.parameters.path_to_index, self.parameters.trained_index))
         # ivfs = []
@@ -95,5 +101,6 @@ class FAISS:
         self.ntotal = self.index.ntotal
 
     def search(self, query_vectors: np.array, k: int):
+        query_vectors = self.normalize(query_vectors.astype('float32'))
         distances, indices = self.index.search(query_vectors, k)
         return distances, indices
