@@ -1,5 +1,18 @@
 import torch
+from torchvision import transforms
 from dtl_siamese_network import SiameseNet, ResNet
+import numpy as np
+
+def normalize(image):
+    # max_value = 4096
+    image = np.log1p(image.astype(np.float32))
+    min_value = np.min(image)
+    max_value = np.max(image)
+    # линейное преобразование для нормирования пикселей
+    image = ((image - min_value) / (max_value - min_value)) * 255
+
+    return image.astype(np.uint8)
+
 
 class ImageVectorizer:
     def __init__(self, path_to_weight, device='cuda' if torch.cuda.is_available() else 'cpu'):
@@ -10,10 +23,16 @@ class ImageVectorizer:
         self.model.to(self.device)
         self.model.eval()
 
+    def _get_transforms(self, mean=0.1307, std=0.3081):
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((mean,), (std,))
+        ])
+        return transform
+
     def vectorize(self, image):
         with torch.no_grad():
-            image = image.to(self.device)
-            feature_vector = self.model(image)
+            feature_vector = self.model.predict(image, device=self.device)
         return feature_vector.cpu().numpy()
 
 # Пример использования

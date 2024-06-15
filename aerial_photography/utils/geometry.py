@@ -9,7 +9,23 @@ import shapely.wkt
 import shapely.wkb
 from shapely.geometry import mapping
 from geoalchemy2.elements import WKBElement
+from shapely.geometry import Polygon
+from pyproj import Transformer
+from shapely.ops import transform
 
+
+def transform_polygon(polygon: Polygon, from_crs: str, to_crs: str) -> Polygon:
+    # Создание трансформера для преобразования координат
+    transformer = Transformer.from_crs(from_crs, to_crs, always_xy=True)
+
+    # Функция для преобразования координат
+    def transform_coords(x, y):
+        return transformer.transform(x, y)
+
+    # Преобразование координат полигона
+    transformed_polygon = transform(transform_coords, polygon)
+
+    return transformed_polygon
 
 
 def convert_polygon_to_str(polygon_coordinates: List[Tuple[float, float]]):
@@ -36,6 +52,7 @@ def convert_str_to_wkb(str_polygon: str) -> WKBElement:
 
 def convert_wkb_to_str(wkb: WKBElement) -> str:
     return str(to_shape(wkb))
+
 
 def convert_wkb_to_coordinates(wkb: WKBElement):
     geom = shapely.wkb.loads(wkb)

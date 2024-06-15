@@ -20,5 +20,5 @@ class Tasks(Base):
                                  Geometry('POLYGON'))  # Координаты полигона, в котором будут запрашиваться снимки
     crs = Column('crs', String)
     # result_ids = Column(String)  # Сохраняем идентификаторы результатов
-    start_time = Column('start_time', DateTime(timezone=True), default=func.now())
-    end_time = Column('end_time', DateTime)
+    start_time = Column('start_time', DateTime)
+    end_time = Column('end_time', DateTime(timezone=True), default=func.now())

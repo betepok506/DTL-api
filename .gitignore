@@ -28,9 +28,9 @@ coverage.xml
 
 # Jupyter Notebook
 .ipynb_checkpoints
-/aerial_photography/dependencies
-!aerial_photography/dependencies/weights/.gitkeep
-!aerial_photography/dependencies/db_faiss/.gitkeep
+/dependencies
+!dependencies/weights/.gitkeep
+!dependencies/db_faiss/.gitkeep
 
 
 # Env files

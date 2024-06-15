@@ -2,7 +2,7 @@
 from typing import List, Union
 import faiss
 import numpy as np
-from config import FAISSConfig
+from aerial_photography.config import FAISSConfig
 import os
 import shutil
 from pathlib import Path
