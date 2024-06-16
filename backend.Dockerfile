@@ -36,4 +36,9 @@ COPY ./requirements.txt /app/requirements.txt
 
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
+RUN apt-get update && apt-get install -y tzdata
+
+# Установите часовой пояс
+# RUN ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime && echo "Europe/Moscow" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata
+
 CMD uvicorn aerial_photography.app:app --reload --workers 1 --host 0.0.0.0 --port $BACKEND_PORT

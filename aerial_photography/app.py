@@ -13,8 +13,7 @@ import logging
 
 
 # ======== Sync ============
-def create_db_and_tables():
-    Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 
 logger = logging.getLogger("uvicorn.error")
@@ -28,7 +27,7 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    create_db_and_tables()
+    # create_db_and_tables()
     yield
 # @app.on_event("startup")
 # def initial_db():

@@ -47,8 +47,11 @@ services:
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
       DATABASE_PORT: ${DATABASE_PORT}
+      TZ: "Europe/Moscow"
     volumes:
       - ./dependencies:/dependencies
+      - /etc/localtime:/etc/localtime:ro  # Монтирование локального времени
+      - /etc/timezone:/etc/timezone:ro
     restart: always
     networks:
       - network-aerial-photography
