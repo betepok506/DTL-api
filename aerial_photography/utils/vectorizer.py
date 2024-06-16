@@ -25,6 +25,7 @@ class ImageVectorizer:
 
     def _get_transforms(self, mean=0.1307, std=0.3081):
         transform = transforms.Compose([
+            transforms.Resize((256, 256)), # todo: Проверить преобразование
             transforms.ToTensor(),
             transforms.Normalize((mean,), (std,))
         ])

@@ -106,8 +106,8 @@ pip install -r requirements.txt
 
 ## 2.4 Второй этап
 
-Далее останавливаем docker контейнер и копируем полученные `block` и `faiss_index.index` из репозитория (DTL-data-processing)[https://github.com/betepok506/DTL-data-processing]  
- в каталог `/dependencies/weights/db_faiss`.
+Далее останавливаем docker контейнер и копируем `faiss_index.index` из репозитория (DTL-data-processing)[https://github.com/betepok506/DTL-data-processing]  
+ в каталог `/dependencies/db_faiss`.
 
 В результате должно получится вот так
 
