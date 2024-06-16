@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 
 class FAISSConfig:
     '''Данный класс содержит параметры конфигурации для работы с FAISS'''
-    path_to_index: str = '/faiss_index'  # Путь до папки, где хранятся индексы
+    path_to_index: str = os.getenv("PATH_TO_FAISS_INDEX", '../dependencies/db_faiss')  # Путь до папки, где хранятся индексы
     path_to_block_index: str = f'{path_to_index}/block'  # Путь до папки, содержищей блоки индекса
     name_index: str = 'faiss_index.index'  # Название файла, содержащего индекс
     trained_index: str = 'trained_index.index'  # Название файла, содержащего индекс для тренировки
@@ -29,18 +29,21 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "local"
 
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", 'postgres')
-    DATABASE_PORT: str = os.getenv('DATABASE_PORT', '6503')
+    DATABASE_PORT: str = os.getenv('DATABASE_PORT', '5432')
     DATABASE_URI: str = os.getenv('DATABASE_URI', 'localhost') + ":" + DATABASE_PORT
     POSTGRES_USER: str = os.getenv('POSTGRES_USER', 'postgres')
     # SQLALCHEMY_DATABASE_URL: str = f"postgresql+asyncpg://postgres:postgres@{DATABASE_URI}/{POSTGRES_PASSWORD}"
     SQLALCHEMY_DATABASE_URL: str = f"postgresql://postgres:postgres@{DATABASE_URI}/{POSTGRES_PASSWORD}"
 
+    PATH_TO_WEIGHTS_VECTORIZER: str = os.getenv('PATH_TO_WEIGHTS_VECTORIZER', '../dependencies/weights/resnet50_3.pth')# '/dependencies/weights/resnet50_3.pth'
+    PATH_TO_FAISS_INDEX: str = os.getenv("PATH_TO_FAISS_INDEX", '../dependencies/db_faiss')
     # Database
     DATABASE_URL: str = SQLALCHEMY_DATABASE_URL
 
     class ConfigDict:
         env_file = ".env"
         case_sensitive = True
+
 
 faiss_config = FAISSConfig()
 settings = Settings()

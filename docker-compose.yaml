@@ -11,16 +11,25 @@ services:
     restart: always
     volumes:
       - aerial-photography-db-data:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro  # Монтирование локального времени
+      - /etc/timezone:/etc/timezone:ro
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      TZ: "Europe/Moscow"
     networks:
       - network-aerial-photography
 
   aerial-photography-backend:
     depends_on:
       - aerial-photography-db
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [ gpu ]
+
     env_file:
       - .env
     ports:
@@ -38,6 +47,8 @@ services:
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
       DATABASE_PORT: ${DATABASE_PORT}
+    volumes:
+      - ./dependencies:/dependencies
     restart: always
     networks:
       - network-aerial-photography

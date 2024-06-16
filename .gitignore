@@ -28,6 +28,10 @@ coverage.xml
 
 # Jupyter Notebook
 .ipynb_checkpoints
+/dependencies
+!dependencies/weights/.gitkeep
+!dependencies/db_faiss/.gitkeep
+
 
 # Env files
 .env
