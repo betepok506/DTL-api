@@ -3,6 +3,7 @@ from torchvision import transforms
 from dtl_siamese_network import SiameseNet, ResNet, ResNet2
 import numpy as np
 
+
 def normalize(image):
     # max_value = 4096
     image = np.log1p(image.astype(np.float32))
@@ -15,9 +16,12 @@ def normalize(image):
 
 
 class ImageVectorizer:
-    def __init__(self, path_to_weight, device='cuda' if torch.cuda.is_available() else 'cpu'):
+    def __init__(self, path_to_weight, name_model='resnet', device='cuda' if torch.cuda.is_available() else 'cpu'):
         self.device = torch.device(device)
-        self.embedding_net = ResNet2()
+        if name_model == 'resnet':
+            self.embedding_net = ResNet()
+        else:
+            self.embedding_net = ResNet2()
         self.model = SiameseNet(self.embedding_net)
         self.model.load_state_dict(torch.load(path_to_weight, map_location=self.device))
         self.model.to(self.device)
@@ -25,7 +29,7 @@ class ImageVectorizer:
 
     def _get_transforms(self, mean=0.1307, std=0.3081):
         transform = transforms.Compose([
-            transforms.Resize((256, 256)), # todo: Проверить преобразование
+            transforms.Resize((256, 256)),  # todo: Проверить преобразование
             transforms.ToTensor(),
             transforms.Normalize((mean,), (std,))
         ])
