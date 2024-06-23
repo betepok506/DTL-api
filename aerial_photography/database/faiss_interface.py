@@ -12,7 +12,7 @@ class FAISS:
     def __init__(self, parameters: FAISSConfig):
         self.parameters: FAISSConfig = parameters
         self.index = faiss.index_factory(self.parameters.vector_dim, f"IVF{int(self.parameters.num_clusters)},PQ64",
-                                         faiss.METRIC_L2)
+                                         faiss.METRIC_INNER_PRODUCT)
 
         self._cur_vectors = np.empty((0, self.parameters.vector_dim))
         self._cur_vectors_ind = np.array([], dtype=np.int8)
@@ -101,6 +101,6 @@ class FAISS:
         self.ntotal = self.index.ntotal
 
     def search(self, query_vectors: np.array, k: int):
-        query_vectors = self.normalize(query_vectors.astype('float32'))
+        # query_vectors = self.normalize(query_vectors.astype('float32'))
         distances, indices = self.index.search(query_vectors, k)
         return distances, indices

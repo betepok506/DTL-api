@@ -7,6 +7,7 @@ from fastapi import APIRouter, UploadFile, File, Query, Depends, HTTPException, 
 from aerial_photography.api.deps import get_db_session
 from aerial_photography import schemas
 from aerial_photography import crud
+from aerial_photography.utils.transform import convert_tif2img
 from datetime import datetime
 from shapely import wkt, Polygon
 
@@ -43,6 +44,7 @@ async def process_image(layout_name: str = Query(...),
     if max_value > 255:
         image = normalize(image)
 
+    image = convert_tif2img(image)
     if image_vectorizer is None:
         raise HTTPException(status_code=500, detail=f"The Neural Network is not loaded. Contact the administrator")
     image_vector = image_vectorizer.vectorize(image)
@@ -57,25 +59,43 @@ async def process_image(layout_name: str = Query(...),
     bounding_boxes = []
     scores = []
     info = []
+    results = []
+    spaces = []
     for ind, idx in enumerate(indices[0]):
         result = crud.layer.get_by_faiss_id_and_layout_name(db=db, faiss_id=int(idx), layout_name=layout_name)
         if result:
             polygon = wkt.loads(result.polygon_coordinates)
             # polygon = transform_polygon(polygon, "EPSG:32637", "EPSG:4326")
             minx, miny, maxx, maxy = polygon.bounds
-            bounding_boxes.append([minx, miny, maxx, maxy])
+            bounding_boxes.append([minx, miny, maxx, maxy])  # minx miny?
             scores.append(distances[0][ind])
+            results.append(result)
+            spaces.append({'dim_space_x': result.dim_space_x, 'dim_space_y': result.dim_space_y})
             info.append({"filename": result.filename})
             # bboxes.append(result)
     if len(bounding_boxes) == 0:
         return {"task_id": -1}
 
-    filtered_results = apply_nms(bounding_boxes, scores)
+    result_ind = 0
+    min_space_x, min_space_y = 1e6, 1e6
+    for ind, (space, score) in enumerate(zip(spaces, scores)):
+        if score > 1.8:
+            if space['dim_space_x'] < min_space_x:
+                result_ind = ind
+                min_space_x = space['dim_space_x']
+            elif space['dim_space_x'] == min_space_x:
+                if space['dim_space_y'] < min_space_y:
+                    result_ind = ind
+                    min_space_y = space['dim_space_y']
+
+    filtered_results = bounding_boxes[result_ind]
+    # filtered_results = apply_nms(bounding_boxes, scores)
     minx, miny, maxx, maxy = filtered_results
     task_scheme = TaskCreate(layout_name=layout_name,
                              crop_name=file.filename,
                              polygon_coordinates=str(
-                                 Polygon([(minx, maxy), (maxx, maxy), (maxx, miny), (minx, miny), (minx, maxy)])),
+                                 # Polygon([(minx, maxy), (maxx, maxy), (maxx, miny), (minx, miny), (minx, maxy)])),
+                                 Polygon([(minx, miny), (maxx, miny), (maxx, maxy), (minx, maxy), (minx, miny)])),
                              crs='EPSG:4326',
                              start_time=start_time)
     task = crud.task.create(db=db, obj_in=task_scheme)
@@ -92,7 +112,8 @@ async def get_task(*,
 
     polygon = wkt.loads(task.polygon_coordinates)
     minx, miny, maxx, maxy = polygon.bounds
-    ul, ur, br, bl = (minx, maxy), (maxx, maxy), (maxx, miny), (minx, miny) #convert_wkb_to_coordinates(task.coordinates)
+    ul, ur, br, bl = (minx, maxy), (maxx, maxy), (maxx, miny), (
+    minx, miny)  # convert_wkb_to_coordinates(task.coordinates)
 
     return {
         "id": task.id,

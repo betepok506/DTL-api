@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     # SQLALCHEMY_DATABASE_URL: str = f"postgresql+asyncpg://postgres:postgres@{DATABASE_URI}/{POSTGRES_PASSWORD}"
     SQLALCHEMY_DATABASE_URL: str = f"postgresql://postgres:postgres@{DATABASE_URI}/{POSTGRES_PASSWORD}"
 
-    PATH_TO_WEIGHTS_VECTORIZER: str = os.getenv('PATH_TO_WEIGHTS_VECTORIZER', '../dependencies/weights/resnet50_3.pth')# '/dependencies/weights/resnet50_3.pth'
+    PATH_TO_WEIGHTS_VECTORIZER: str = os.getenv('PATH_TO_WEIGHTS_VECTORIZER', '../dependencies/weights/resnet50_2_cosine_sim_cos.pth')# '/dependencies/weights/resnet50_3.pth'
     PATH_TO_FAISS_INDEX: str = os.getenv("PATH_TO_FAISS_INDEX", '../dependencies/db_faiss')
     # Database
     DATABASE_URL: str = SQLALCHEMY_DATABASE_URL

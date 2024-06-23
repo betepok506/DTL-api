@@ -1,6 +1,6 @@
 import torch
 from torchvision import transforms
-from dtl_siamese_network import SiameseNet, ResNet
+from dtl_siamese_network import SiameseNet, ResNet, ResNet2
 import numpy as np
 
 def normalize(image):
@@ -17,7 +17,7 @@ def normalize(image):
 class ImageVectorizer:
     def __init__(self, path_to_weight, device='cuda' if torch.cuda.is_available() else 'cpu'):
         self.device = torch.device(device)
-        self.embedding_net = ResNet()
+        self.embedding_net = ResNet2()
         self.model = SiameseNet(self.embedding_net)
         self.model.load_state_dict(torch.load(path_to_weight, map_location=self.device))
         self.model.to(self.device)

@@ -13,6 +13,7 @@ services:
       - aerial-photography-db-data:/var/lib/postgresql/data
       - /etc/localtime:/etc/localtime:ro  # Монтирование локального времени
       - /etc/timezone:/etc/timezone:ro
+      - ./db_dump:/db_dump
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
